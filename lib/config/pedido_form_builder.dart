@@ -1,0 +1,63 @@
+import 'package:flutter/material.dart';
+
+final List<Map<String, dynamic>> pedidoFormControls = [
+  {
+    'name': 'numero_tracking',
+    'label': 'Número de Seguimiento',
+    'icon': Icons.tag,
+    'keyboardType': TextInputType.text,
+    'obscureText': false,
+    'isSelect': false,
+    'section': 'envio',
+  },
+  {
+    'name': 'descripcion',
+    'label': 'Descripción del Paquete',
+    'icon': Icons.description,
+    'keyboardType': TextInputType.multiline,
+    'obscureText': false,
+    'isSelect': false,
+    'section': 'paquete',
+  },
+  {
+    'name': 'id_empresa_envio',
+    'label': 'Empresa de Envío',
+    'icon': Icons.business,
+    'isSelect': true,
+    'section': 'envio',
+  },
+  {
+    'name': 'id_tienda',
+    'label': 'Tienda',
+    'icon': Icons.store,
+    'isSelect': true,
+    'section': 'envio',
+  },
+  {
+    'name': 'otra_tienda',
+    'label': 'Otra Tienda (Especificar)',
+    'icon': Icons.store_outlined,
+    'keyboardType': TextInputType.text,
+    'obscureText': false,
+    'isSelect': false,
+    'section': 'envio',
+    'optional': true,
+  },
+  {
+    'name': 'id_ciudad_destino',
+    'label': 'Ciudad de Destino',
+    'icon': Icons.location_city,
+    'isSelect': true,
+    'section': 'destino',
+  },
+  {
+    'name': 'instruccion',
+    'label': 'Instrucciones Especiales',
+    'icon': Icons.note_alt,
+    'keyboardType': TextInputType.multiline,
+    'obscureText': false,
+    'isSelect': false,
+    'section': 'adicional',
+    'optional': true,
+  },
+];
