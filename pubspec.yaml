@@ -40,6 +40,21 @@ dependencies:
   image_picker: ^1.1.2
   firebase_core: ^3.6.0
   firebase_messaging: ^15.0.3
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.4.3
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/zonedigital.jpg
+
+  android_12:
+    color: "#ffffff"
+    image: assets/zonedigital.jpg
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/zonedigital.jpg"
 
 dev_dependencies:
   flutter_test:

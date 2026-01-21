@@ -3,19 +3,19 @@ import 'package:app_zonebox/pages/login_screen.dart';
 import 'package:app_zonebox/services/navigation_service.dart';
 import 'package:app_zonebox/services/secure_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:app_zonebox/services/auth_service.dart';
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-  debugPrint("📩 Notificación en segundo plano: ${message.messageId}");
-}
+// Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+//   await Firebase.initializeApp();
+//   debugPrint("📩 Notificación en segundo plano: ${message.messageId}");
+// }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  // await Firebase.initializeApp();
+  // FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   runApp(const MyApp());
 }
@@ -28,16 +28,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  // final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  late Future<String?> _tokenFuture;
 
   Future<String?> _getToken() async {
     try {
       await AuthService().verificarToken();
       final data = await SecureStorageService.getToken();
-      debugPrint("🔑 Token obtenido: $data");
       return data;
     } catch (e) {
-      debugPrint("🔑 Token no obtenido: $e");
       return null;
     }
   }
@@ -45,28 +44,29 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _initNotifications();
+    _tokenFuture = _getToken();
+    // _initNotifications();
   }
 
-  Future<void> _initNotifications() async {
-    NotificationSettings settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+  // Future<void> _initNotifications() async {
+  //   NotificationSettings settings = await _messaging.requestPermission(
+  //     alert: true,
+  //     badge: true,
+  //     sound: true,
+  //   );
 
-    String? fcmToken = await _messaging.getToken();
+  //   String? fcmToken = await _messaging.getToken();
 
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint("💬 Notificación recibida en primer plano:");
-      debugPrint("Título: ${message.notification?.title}");
-      debugPrint("Cuerpo: ${message.notification?.body}");
-    });
+  //   FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+  //     debugPrint("💬 Notificación recibida en primer plano:");
+  //     debugPrint("Título: ${message.notification?.title}");
+  //     debugPrint("Cuerpo: ${message.notification?.body}");
+  //   });
 
-    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      debugPrint("🚀 App abierta desde notificación: ${message.data}");
-    });
-  }
+  //   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+  //     debugPrint("🚀 App abierta desde notificación: ${message.data}");
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
       ),
       home: FutureBuilder<String?>(
-        future: _getToken(),
+        future: _tokenFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());

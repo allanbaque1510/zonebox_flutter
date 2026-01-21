@@ -11,6 +11,7 @@ import 'package:app_zonebox/widgets/UsuarioDashboard/estadisticas_rapidas.dart';
 import 'package:app_zonebox/widgets/UsuarioDashboard/card_pedido_pendiente.dart';
 import 'package:app_zonebox/widgets/UsuarioDashboard/card_mi_pedido.dart';
 import 'package:app_zonebox/widgets/custom_confirmation_dialog.dart';
+import 'package:app_zonebox/widgets/loading.dart';
 import 'package:flutter/material.dart';
 
 class DashboardUsuarioScreen extends StatefulWidget {
@@ -34,6 +35,7 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
   int totalPendientes = 0;
 
   String searchQuery = '';
+  bool _isLoading = false;
   bool isLoadingPendientes = false;
   bool isLoadingMisPedidos = false;
 
@@ -70,7 +72,6 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
 
     try {
       final response = await GestionarPedidoService().obtenerPedidos();
-      debugPrint(response.toString());
       setState(() {
         pedidosPendientes = response['pedidosPendientes'];
         misPedidosEnProceso = response['pedidosEnGestion'];
@@ -104,41 +105,48 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
-      body: Column(
+      body: Stack(
         children: [
-          HeaderUsuario(
-            nombreUsuario: usuario?.primerNombre ?? 'Administrador',
-            onHistorialTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HistorialPedidosScreen(),
+          Column(
+            children: [
+              HeaderUsuario(
+                nombreUsuario: usuario?.primerNombre ?? 'Administrador',
+                onHistorialTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => HistorialPedidosScreen(),
+                    ),
+                  );
+                },
+                onPerfilTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => UserProfileScreen(),
+                    ),
+                  );
+                },
+                onSearchChanged: (value) {
+                  setState(() => searchQuery = value);
+                },
+                tabController: _tabController,
+                estadisticas: EstadisticasRapidas(
+                  disponibles: totalPendientes,
+                  asignados: totalEnGestion,
+                  completados: totalCompletados,
                 ),
-              );
-            },
-            onPerfilTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UserProfileScreen()),
-              );
-            },
-            onSearchChanged: (value) {
-              setState(() => searchQuery = value);
-            },
-            tabController: _tabController,
-            estadisticas: EstadisticasRapidas(
-              disponibles: totalPendientes,
-              asignados: totalEnGestion,
-              completados: totalCompletados,
-            ),
-          ),
+              ),
 
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [_buildPendientesAsignacion(), _buildMisPedidos()],
-            ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [_buildPendientesAsignacion(), _buildMisPedidos()],
+                ),
+              ),
+            ],
           ),
+          if (_isLoading) Loading(),
         ],
       ),
     );
@@ -251,13 +259,15 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
                 '¿Deseas asignarte el pedido ${pedido['codigo']}?\n\nSerás responsable de gestionarlo hasta su entrega.',
           ),
     );
-
+    debugPrint('Confirmar asignación: $confirmar');
     if (confirmar == true) {
       try {
+        setState(() {
+          _isLoading = true;
+        });
         final response = await GestionarPedidoService().asignarPedido({
           'pedido': pedido['id'],
         });
-
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -283,6 +293,10 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error), backgroundColor: Color(0xFFEF4444)),
         );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }

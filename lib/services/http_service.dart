@@ -18,7 +18,6 @@ class Httpservice {
         (key, value) => MapEntry(key, value.toString()),
       ),
     );
-
     final response = await http.get(
       uri,
       headers: {
@@ -28,7 +27,6 @@ class Httpservice {
     );
 
     final respuesta = jsonDecode(response.body);
-
     if (response.statusCode == 200) {
       return respuesta["data"];
     } else if (response.statusCode == 401) {

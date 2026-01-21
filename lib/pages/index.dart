@@ -34,7 +34,6 @@ class _IndexState extends State<Index> {
         usuario = UserModel.fromJson(data);
       });
     } catch (e) {
-      print('Error al cargar el usuario: $e');
       setState(() {
         usuario = null;
       });
@@ -50,7 +49,6 @@ class _IndexState extends State<Index> {
     if (_isLoading) {
       return const Scaffold(body: Stack(children: [Loading()]));
     }
-    print('Tipo de usuario: ${usuario}');
     if (usuario?.tipoUsuario.codigo == 'CLIENT') {
       return DashboardClientScreen(usuarioIndex: usuario);
     }

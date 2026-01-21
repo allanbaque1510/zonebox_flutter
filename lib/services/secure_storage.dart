@@ -1,9 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class SecureStorageService {
-  static final _storage = FlutterSecureStorage();
+  static final _storage = FlutterSecureStorage(
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
 
   // Guardar token de manera segura
   static Future<void> saveToken(String token) async {

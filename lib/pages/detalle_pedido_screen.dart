@@ -293,7 +293,10 @@ class _DetallePedidoScreenState extends State<DetallePedidoScreen> {
                             Divider(height: 24),
                             _buildInfoRow(
                               'Fecha de Entrega Estimada',
-                              _formatDate(pedido!['fecha_entrega_estimada']),
+                              _formatDate(
+                                pedido!['fecha_entrega_estimada'],
+                                hour: false,
+                              ),
                               Icons.event_available,
                             ),
                           ]),
@@ -548,11 +551,14 @@ class _DetallePedidoScreenState extends State<DetallePedidoScreen> {
     );
   }
 
-  String _formatDate(String? dateStr) {
+  String _formatDate(String? dateStr, {bool hour = true}) {
     try {
       if (dateStr == null) return '';
       DateTime date = DateTime.parse(dateStr);
-      return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+      if (hour) {
+        return '${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
+      }
+      return '${date.day}/${date.month}/${date.year}';
     } catch (e) {
       return '';
     }

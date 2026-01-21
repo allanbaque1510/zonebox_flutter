@@ -621,7 +621,6 @@ class _CrearPedidoScreenState extends State<CrearPedidoScreen> {
 
   Widget _buildTextField(Map<String, dynamic> field) {
     final validarEnabled = field['name'] == 'otra_tienda';
-    print(field['name'] + ': ' + validarEnabled.toString());
     return CustomTextFormField(
       controller: _controllers[field['name']]!,
       labelText: field['label'],
