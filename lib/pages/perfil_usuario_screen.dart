@@ -5,14 +5,14 @@ import 'package:app_zonebox/services/secure_storage.dart';
 import 'package:flutter/material.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  const UserProfileScreen({super.key});
+  final UserModel usuario;
+  const UserProfileScreen({super.key, required this.usuario});
 
   @override
   State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
-  UserModel? usuario;
   String nomenclatura = 'A';
 
   void logOut() async {
@@ -33,26 +33,26 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     }
   }
 
-  Future<void> _loadUser() async {
-    final data = await SecureStorageService.getUser();
-    if (data == null) {
-      usuario = null;
-      setState(() {});
-      return;
-    }
-    usuario = UserModel.fromJson(data);
-    setState(() {
-      nomenclatura =
-          usuario!.primerNombre.substring(0, 1).toUpperCase() +
-          usuario!.primerApellido.substring(0, 1).toUpperCase();
-    });
-  }
+  // Future<void> _loadUser() async {
+  //   final data = await SecureStorageService.getUser();
+  //   if (data == null) {
+  //     usuario = null;
+  //     setState(() {});
+  //     return;
+  //   }
+  //   usuario = UserModel.fromJson(data);
+  //   setState(() {
+  //     nomenclatura =
+  //         usuario!.primerNombre.substring(0, 1).toUpperCase() +
+  //         usuario!.primerApellido.substring(0, 1).toUpperCase();
+  //   });
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadUser();
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   _loadUser();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -127,7 +127,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 SizedBox(height: 16),
 
                 Text(
-                  "${usuario?.primerNombre} ${usuario?.primerApellido}",
+                  "${widget.usuario.primerNombre} ${widget.usuario.primerApellido}",
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -144,7 +144,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    "${usuario?.email}",
+                    widget.usuario.email,
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.w600,

@@ -160,7 +160,9 @@ class _DashboardClientScreenState extends State<DashboardClientScreen> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => UserProfileScreen(),
+                                builder:
+                                    (context) =>
+                                        UserProfileScreen(usuario: usuario!),
                               ),
                             );
                           },

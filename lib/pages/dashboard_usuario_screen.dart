@@ -30,6 +30,9 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
 
   List<dynamic> pedidosPendientes = [];
   List<dynamic> misPedidosEnProceso = [];
+
+  List<dynamic> showPedidosPendientes = [];
+  List<dynamic> showMisPedidosEnProceso = [];
   int totalCompletados = 0;
   int totalEnGestion = 0;
   int totalPendientes = 0;
@@ -76,6 +79,9 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
         pedidosPendientes = response['pedidosPendientes'];
         misPedidosEnProceso = response['pedidosEnGestion'];
 
+        showPedidosPendientes = response['pedidosPendientes'];
+        showMisPedidosEnProceso = response['pedidosEnGestion'];
+
         totalCompletados = response['countPedidosCompletados'];
         totalEnGestion = response['countPedidosEnGestion'];
         totalPendientes = response['countPedidosPendientes'];
@@ -88,6 +94,26 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
         isLoadingMisPedidos = false;
       });
     }
+  }
+
+  void _aplicarFiltros(String value) {
+    setState(() {
+      if (value.isEmpty) {
+        showPedidosPendientes = pedidosPendientes;
+        showMisPedidosEnProceso = misPedidosEnProceso;
+        return;
+      }
+
+      showPedidosPendientes =
+          pedidosPendientes.where((pedido) {
+            return pedido['codigo'].toLowerCase().contains(value.toLowerCase());
+          }).toList();
+
+      showMisPedidosEnProceso =
+          misPedidosEnProceso.where((pedido) {
+            return pedido['codigo'].toLowerCase().contains(value.toLowerCase());
+          }).toList();
+    });
   }
 
   Future<void> _reloadUser() async {
@@ -123,12 +149,13 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => UserProfileScreen(),
+                      builder:
+                          (context) => UserProfileScreen(usuario: usuario!),
                     ),
                   );
                 },
                 onSearchChanged: (value) {
-                  setState(() => searchQuery = value);
+                  _aplicarFiltros(value);
                 },
                 tabController: _tabController,
                 estadisticas: EstadisticasRapidas(
@@ -157,7 +184,7 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
       return Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)));
     }
 
-    if (pedidosPendientes.isEmpty) {
+    if (showPedidosPendientes.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -187,9 +214,9 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
       color: Color(0xFF2563EB),
       child: ListView.builder(
         padding: EdgeInsets.all(16),
-        itemCount: pedidosPendientes.length,
+        itemCount: showPedidosPendientes.length,
         itemBuilder: (context, index) {
-          final pedido = pedidosPendientes[index];
+          final pedido = showPedidosPendientes[index];
           return CardPedidoPendiente(
             pedido: pedido,
             onAsignar: () => _asignarPedido(pedido),
@@ -205,7 +232,7 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
       return Center(child: CircularProgressIndicator(color: Color(0xFF2563EB)));
     }
 
-    if (misPedidosEnProceso.isEmpty) {
+    if (showMisPedidosEnProceso.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -236,9 +263,9 @@ class _DashboardUsuarioScreenState extends State<DashboardUsuarioScreen>
       color: Color(0xFF2563EB),
       child: ListView.builder(
         padding: EdgeInsets.all(16),
-        itemCount: misPedidosEnProceso.length,
+        itemCount: showMisPedidosEnProceso.length,
         itemBuilder: (context, index) {
-          final pedido = misPedidosEnProceso[index];
+          final pedido = showMisPedidosEnProceso[index];
           return CardMiPedido(
             pedido: pedido,
             onGestionar: () => _showGestionarDialog(pedido),
